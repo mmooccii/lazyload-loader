@@ -1,2 +1,3 @@
 # lazyload-loader
- Lazyload configuration loader
+
+Lazyload configuration loader
