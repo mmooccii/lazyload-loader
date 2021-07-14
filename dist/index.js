@@ -32,12 +32,11 @@ function loader(content) {
   const context = options.context || this.rootContext;
   const name = options.name || '[contenthash].[ext]';
   const file = this.resourcePath;
-  const url = (0, _loaderUtils.interpolateName)(this, name, {
+  let url = (0, _loaderUtils.interpolateName)(this, name, {
     context,
     content,
     regExp: options.regExp
   });
-  let outputPath = url;
   let md = {};
   const self = this;
   return Promise.resolve().then(() => {
@@ -45,7 +44,6 @@ function loader(content) {
       md = metadata;
 
       if (metadata.format === 'svg' || metadata.hasAlpha) {
-        outputPath = outputPath.replace(/\.\w+$/, '.png');
         return (0, _sharp.default)({
           create: {
             width: metadata.width,
@@ -92,7 +90,6 @@ function loader(content) {
 
         default:
           outputType = 'jpeg';
-          outputPath = outputPath.replace(/\.\w+$/, '.jpg');
           break;
       }
 
@@ -104,6 +101,12 @@ function loader(content) {
     }) => data);
   }).then(data => {
     const assetInfo = {};
+
+    if (md.format !== _path.default.extname(url)) {
+      url = url.replace(_path.default.extname(url), md.format);
+    }
+
+    const outputPath = url;
     let publicPath = `__webpack_public_path__ + ${JSON.stringify(outputPath)}`;
 
     if (options.publicPath) {
