@@ -105,6 +105,7 @@ function loader(content) {
           break;
       }
 
+      publicPath = `${publicPath}?w=${metadata.width}&h=${metadata.height}`;
       return sharped[outputType](opt).toBuffer({
         resolveWithObject: true
       });
