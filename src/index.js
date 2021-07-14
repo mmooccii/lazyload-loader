@@ -29,23 +29,7 @@ export default function loader(content) {
   });
 
   let outputPath = url;
-
-  let publicPath = `__webpack_public_path__ + ${JSON.stringify(outputPath)}`;
-
-  if (options.publicPath) {
-    if (typeof options.publicPath === 'function') {
-      publicPath = options.publicPath(url, this.resourcePath, context);
-    } else {
-      publicPath = `${
-        options.publicPath.endsWith('/')
-          ? options.publicPath
-          : `${options.publicPath}/`
-      }${url}`;
-    }
-
-    publicPath = JSON.stringify(publicPath);
-  }
-
+  let md = {};
   const self = this;
 
   return Promise.resolve()
@@ -53,9 +37,9 @@ export default function loader(content) {
       return sharp(file)
         .metadata()
         .then((metadata) => {
+          md = metadata;
           if (metadata.format === 'svg' || metadata.hasAlpha) {
             outputPath = outputPath.replace(/\.\w+$/, '.png');
-            publicPath = publicPath.replace(/\.\w+$/, '.png');
             return sharp({
               create: {
                 width: metadata.width,
@@ -90,10 +74,9 @@ export default function loader(content) {
               break;
             default:
               outputType = 'jpeg';
+              outputPath = outputPath.replace(/\.\w+$/, '.jpg');
               break;
           }
-
-          publicPath = `${publicPath}?w=${metadata.width}&h=${metadata.height}`;
 
           return sharped[outputType](opt).toBuffer({ resolveWithObject: true });
         })
@@ -101,6 +84,24 @@ export default function loader(content) {
     })
     .then((data) => {
       const assetInfo = {};
+
+      let publicPath = `__webpack_public_path__ + ${JSON.stringify(
+        outputPath
+      )}`;
+
+      if (options.publicPath) {
+        if (typeof options.publicPath === 'function') {
+          publicPath = options.publicPath(url, this.resourcePath, context);
+        } else {
+          publicPath = `${
+            options.publicPath.endsWith('/')
+              ? options.publicPath
+              : `${options.publicPath}/`
+          }${url}`;
+        }
+        publicPath = `${publicPath}?w=${md.width}&h=${md.height}`;
+        publicPath = JSON.stringify(publicPath);
+      }
 
       if (typeof name === 'string') {
         let normalizedName = name;
