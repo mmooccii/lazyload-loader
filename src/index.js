@@ -74,9 +74,26 @@ export default function loader(content) {
               width: parseInt(metadata.width / 3, 10),
             });
           }
-          return sharped
-            .jpeg({ quality: 33 })
-            .toBuffer({ resolveWithObject: true });
+
+          let outputType;
+          let opt = { quality: 33 };
+          switch (metadata.format) {
+            case 'gif':
+              outputType = 'gif';
+              opt = {};
+              break;
+            case 'png':
+              outputType = 'png';
+              break;
+            case 'webp':
+              outputType = 'webp';
+              break;
+            default:
+              outputType = 'jpeg';
+              break;
+          }
+
+          return sharped[outputType](opt).toBuffer({ resolveWithObject: true });
         })
         .then(({ data }) => data);
     })
