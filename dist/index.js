@@ -54,8 +54,8 @@ function loader(content) {
   return Promise.resolve().then(() => {
     return (0, _sharp.default)(file).metadata().then(metadata => {
       if (metadata.format === 'svg' || metadata.hasAlpha) {
-        outputPath = outputPath.replace(/\.jpg$/, '.png');
-        publicPath = publicPath.replace(/\.jpg/, '.png');
+        outputPath = outputPath.replace(/\.\w+$/, '.png');
+        publicPath = publicPath.replace(/\.\w+$/, '.png');
         return (0, _sharp.default)({
           create: {
             width: metadata.width,
