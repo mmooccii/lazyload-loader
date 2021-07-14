@@ -81,9 +81,31 @@ function loader(content) {
         });
       }
 
-      return sharped.jpeg({
+      let outputType;
+      let opt = {
         quality: 33
-      }).toBuffer({
+      };
+
+      switch (metadata.format) {
+        case 'gif':
+          outputType = 'gif';
+          opt = {};
+          break;
+
+        case 'png':
+          outputType = 'png';
+          break;
+
+        case 'webp':
+          outputType = 'webp';
+          break;
+
+        default:
+          outputType = 'jpeg';
+          break;
+      }
+
+      return sharped[outputType](opt).toBuffer({
         resolveWithObject: true
       });
     }).then(({
