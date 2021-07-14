@@ -1,7 +1,7 @@
 {
   "name": "@mmooccii/lazyload-loader",
   "description": "Lazyload configuration loader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/cjs.js",
   "files": [
     "dist"
