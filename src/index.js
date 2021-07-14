@@ -22,7 +22,7 @@ export default function loader(content) {
   const name = options.name || '[contenthash].[ext]';
   const file = this.resourcePath;
 
-  let url = interpolateName(this, name, {
+  const url = interpolateName(this, name, {
     context,
     content,
     regExp: options.regExp,
@@ -81,9 +81,6 @@ export default function loader(content) {
     })
     .then((data) => {
       const assetInfo = {};
-      if (md.format !== path.extname(url)) {
-        url = url.replace(path.extname(url), md.format);
-      }
 
       const outputPath = url;
       let publicPath = `__webpack_public_path__ + ${JSON.stringify(

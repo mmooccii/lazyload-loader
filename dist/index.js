@@ -32,7 +32,7 @@ function loader(content) {
   const context = options.context || this.rootContext;
   const name = options.name || '[contenthash].[ext]';
   const file = this.resourcePath;
-  let url = (0, _loaderUtils.interpolateName)(this, name, {
+  const url = (0, _loaderUtils.interpolateName)(this, name, {
     context,
     content,
     regExp: options.regExp
@@ -101,11 +101,6 @@ function loader(content) {
     }) => data);
   }).then(data => {
     const assetInfo = {};
-
-    if (md.format !== _path.default.extname(url)) {
-      url = url.replace(_path.default.extname(url), md.format);
-    }
-
     const outputPath = url;
     let publicPath = `__webpack_public_path__ + ${JSON.stringify(outputPath)}`;
 
