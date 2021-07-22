@@ -40,7 +40,9 @@ export default function loader(content) {
 
           if (metadata.format === 'svg') {
             const { width, height } = metadata;
-            return `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"%3E%3C/svg%3E`;
+            return {
+              data: `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"%3E%3C/svg%3E`,
+            };
           }
 
           if (metadata.format === 'png' && metadata.hasAlpha) {
@@ -132,7 +134,7 @@ export default function loader(content) {
       if (typeof data !== 'string') {
         self.emitFile(outputPath, data, null, assetInfo);
       } else {
-        publicPath = data;
+        publicPath = JSON.stringify(encodeURI(data));
       }
 
       const esModule =
