@@ -37,7 +37,13 @@ export default function loader(content) {
         .metadata()
         .then((metadata) => {
           md = metadata;
-          if (metadata.format === 'svg' || metadata.hasAlpha) {
+
+          if (metadata.format === 'svg') {
+            const { width, height } = metadata;
+            return `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"%3E%3C/svg%3E`;
+          }
+
+          if (metadata.format === 'png' && metadata.hasAlpha) {
             return sharp({
               create: {
                 width: metadata.width,
@@ -123,7 +129,11 @@ export default function loader(content) {
         path.relative(self.rootContext, self.resourcePath)
       );
 
-      self.emitFile(outputPath, data, null, assetInfo);
+      if (typeof data !== 'string') {
+        self.emitFile(outputPath, data, null, assetInfo);
+      } else {
+        publicPath = data;
+      }
 
       const esModule =
         typeof options.esModule !== 'undefined' ? options.esModule : true;
