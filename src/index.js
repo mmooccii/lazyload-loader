@@ -3,6 +3,8 @@ import path from 'path';
 import { getOptions, interpolateName } from 'loader-utils';
 import { validate } from 'schema-utils';
 
+import mime from 'mime-types';
+
 import sharp from 'sharp';
 
 import schema from './options.json';
@@ -38,14 +40,10 @@ export default function loader(content) {
         .then((metadata) => {
           md = metadata;
 
-          if (metadata.format === 'svg') {
-            const { width, height } = metadata;
-            return {
-              data: `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"%3E%3C/svg%3E`,
-            };
-          }
-
-          if (metadata.format === 'png' && metadata.hasAlpha) {
+          if (
+            metadata.format === 'svg' ||
+            (metadata.format === 'png' && metadata.hasAlpha)
+          ) {
             return sharp({
               create: {
                 width: metadata.width,
@@ -54,8 +52,10 @@ export default function loader(content) {
                 background: { r: 255, g: 255, b: 255, alpha: 0.0 },
               },
             })
+              .resize(10)
               .png()
-              .toBuffer({ resolveWithObject: true });
+              .toBuffer({ resolveWithObject: true })
+              .toString('base64');
           }
 
           let sharped = sharp(file).blur(20);
@@ -134,7 +134,8 @@ export default function loader(content) {
       if (typeof data !== 'string') {
         self.emitFile(outputPath, data, null, assetInfo);
       } else {
-        publicPath = JSON.stringify(encodeURI(data));
+        const mimetype = mime.contentType('png');
+        publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
       }
 
       const esModule =

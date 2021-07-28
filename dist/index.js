@@ -12,6 +12,8 @@ var _loaderUtils = require("loader-utils");
 
 var _schemaUtils = require("schema-utils");
 
+var _mimeTypes = _interopRequireDefault(require("mime-types"));
+
 var _sharp = _interopRequireDefault(require("sharp"));
 
 var _options = _interopRequireDefault(require("./options.json"));
@@ -43,17 +45,7 @@ function loader(content) {
     return (0, _sharp.default)(file).metadata().then(metadata => {
       md = metadata;
 
-      if (metadata.format === 'svg') {
-        const {
-          width,
-          height
-        } = metadata;
-        return {
-          data: `data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}"%3E%3C/svg%3E`
-        };
-      }
-
-      if (metadata.format === 'png' && metadata.hasAlpha) {
+      if (metadata.format === 'svg' || metadata.format === 'png' && metadata.hasAlpha) {
         return (0, _sharp.default)({
           create: {
             width: metadata.width,
@@ -66,9 +58,9 @@ function loader(content) {
               alpha: 0.0
             }
           }
-        }).png().toBuffer({
+        }).resize(10).png().toBuffer({
           resolveWithObject: true
-        });
+        }).toString('base64');
       }
 
       let sharped = (0, _sharp.default)(file).blur(20);
@@ -145,7 +137,9 @@ function loader(content) {
     if (typeof data !== 'string') {
       self.emitFile(outputPath, data, null, assetInfo);
     } else {
-      publicPath = JSON.stringify(encodeURI(data));
+      const mimetype = _mimeTypes.default.contentType('png');
+
+      publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
     }
 
     const esModule = typeof options.esModule !== 'undefined' ? options.esModule : true;
