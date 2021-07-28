@@ -52,7 +52,7 @@ export default function loader(content) {
                 background: { r: 255, g: 255, b: 255, alpha: 0.0 },
               },
             })
-              .resize(10)
+              .resize(metadata.width / 2)
               .png()
               .toBuffer({ resolveWithObject: true })
               .toString('base64');
@@ -131,11 +131,11 @@ export default function loader(content) {
         path.relative(self.rootContext, self.resourcePath)
       );
 
-      if (typeof data !== 'string') {
-        self.emitFile(outputPath, data, null, assetInfo);
-      } else {
+      if (md.format === 'svg' || (md.format === 'png' && md.hasAlpha)) {
         const mimetype = mime.contentType('png');
         publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
+      } else {
+        self.emitFile(outputPath, data, null, assetInfo);
       }
 
       const esModule =

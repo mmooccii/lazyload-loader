@@ -58,7 +58,7 @@ function loader(content) {
               alpha: 0.0
             }
           }
-        }).resize(10).png().toBuffer({
+        }).resize(metadata.width / 2).png().toBuffer({
           resolveWithObject: true
         }).toString('base64');
       }
@@ -134,12 +134,12 @@ function loader(content) {
 
     assetInfo.sourceFilename = (0, _utils.normalizePath)(_path.default.relative(self.rootContext, self.resourcePath));
 
-    if (typeof data !== 'string') {
-      self.emitFile(outputPath, data, null, assetInfo);
-    } else {
+    if (md.format === 'svg' || md.format === 'png' && md.hasAlpha) {
       const mimetype = _mimeTypes.default.contentType('png');
 
       publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
+    } else {
+      self.emitFile(outputPath, data, null, assetInfo);
     }
 
     const esModule = typeof options.esModule !== 'undefined' ? options.esModule : true;
