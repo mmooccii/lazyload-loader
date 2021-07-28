@@ -60,7 +60,7 @@ function loader(content) {
           }
         }).resize(metadata.width / 2).png().toBuffer({
           resolveWithObject: true
-        }).toString('base64');
+        });
       }
 
       let sharped = (0, _sharp.default)(file).blur(20);
@@ -137,7 +137,7 @@ function loader(content) {
     if (md.format === 'svg' || md.format === 'png' && md.hasAlpha) {
       const mimetype = _mimeTypes.default.contentType('png');
 
-      publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
+      publicPath = JSON.stringify(`data:${mimetype};base64,${data.toString('base64')}`);
     } else {
       self.emitFile(outputPath, data, null, assetInfo);
     }

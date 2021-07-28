@@ -54,8 +54,7 @@ export default function loader(content) {
             })
               .resize(metadata.width / 2)
               .png()
-              .toBuffer({ resolveWithObject: true })
-              .toString('base64');
+              .toBuffer({ resolveWithObject: true });
           }
 
           let sharped = sharp(file).blur(20);
@@ -133,7 +132,9 @@ export default function loader(content) {
 
       if (md.format === 'svg' || (md.format === 'png' && md.hasAlpha)) {
         const mimetype = mime.contentType('png');
-        publicPath = JSON.stringify(`data:${mimetype};base64,${data}`);
+        publicPath = JSON.stringify(
+          `data:${mimetype};base64,${data.toString('base64')}`
+        );
       } else {
         self.emitFile(outputPath, data, null, assetInfo);
       }
