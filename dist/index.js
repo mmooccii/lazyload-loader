@@ -45,11 +45,11 @@ function loader(content) {
     return (0, _sharp.default)(file).metadata().then(metadata => {
       md = metadata;
 
-      if (metadata.format === 'svg' || metadata.format === 'png' && metadata.hasAlpha) {
+      if (metadata.format === 'svg' || metadata.format === 'gif' || metadata.format === 'png' && metadata.hasAlpha) {
         return (0, _sharp.default)({
           create: {
-            width: metadata.width,
-            height: metadata.height,
+            width: parseInt(metadata.width, 10),
+            height: parseInt(metadata.height, 10),
             channels: 4,
             background: {
               r: 255,
@@ -58,7 +58,7 @@ function loader(content) {
               alpha: 0.0
             }
           }
-        }).resize(metadata.width / 2).png().toBuffer({
+        }).resize(parseInt(metadata.width / 2, 10)).png().toBuffer({
           resolveWithObject: true
         });
       }
@@ -72,16 +72,11 @@ function loader(content) {
       }
 
       let outputType;
-      let opt = {
+      const opt = {
         quality: 33
       };
 
       switch (metadata.format) {
-        case 'gif':
-          outputType = 'gif';
-          opt = {};
-          break;
-
         case 'png':
           outputType = 'png';
           break;

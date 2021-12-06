@@ -42,17 +42,18 @@ export default function loader(content) {
 
           if (
             metadata.format === 'svg' ||
+            metadata.format === 'gif' ||
             (metadata.format === 'png' && metadata.hasAlpha)
           ) {
             return sharp({
               create: {
-                width: metadata.width,
-                height: metadata.height,
+                width: parseInt(metadata.width, 10),
+                height: parseInt(metadata.height, 10),
                 channels: 4,
                 background: { r: 255, g: 255, b: 255, alpha: 0.0 },
               },
             })
-              .resize(metadata.width / 2)
+              .resize(parseInt(metadata.width / 2, 10))
               .png()
               .toBuffer({ resolveWithObject: true });
           }
@@ -65,12 +66,8 @@ export default function loader(content) {
           }
 
           let outputType;
-          let opt = { quality: 33 };
+          const opt = { quality: 33 };
           switch (metadata.format) {
-            case 'gif':
-              outputType = 'gif';
-              opt = {};
-              break;
             case 'png':
               outputType = 'png';
               break;
